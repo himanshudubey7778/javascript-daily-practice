@@ -33,3 +33,12 @@ const myFunction = function(){
 
 
 console.log(typeof scoreValue, score, isLoggedIn, outsideTump, );
+
+console.log([1,2,3] instanceof Array);
+console.log(1 + '2' - 1);
+console.log(typeof NaN);
+console.log(this);
+
+
+
+
