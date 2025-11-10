@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Simple Pixel Art</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 18px;
+            background: #fff
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+        .btn {
+            background: #b66bf3;
+            color: #fff;
+            border: 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: #000;
+            border: 1px solid #ddd
+        }
+
+        input[type=number] {
+            width: 60px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc
+        }
+
+        #canvasWrap {
+            border: 1px solid #eee;
+            display: inline-block;
+            padding: 8px
+        }
+
+        canvas {
+            display: block;
+            background: #fff;
+            image-rendering: pixelated
+        }
+
+        /* grid overlay uses semi-transparent lines similar to screenshot */
+        .controls-left {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        label {
+            font-size: 13px;
+            color: #333
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="toolbar">
+        <div class="controls-left">
+            <input id="color" type="color" value="#000000" title="Pick color">
+            <button id="clearBtn" class="btn">Clear Canvas</button>
+        </div>
+
+        <div>
+            <input id="sizeInput" type="number" min="4" max="128" value="16" title="Grid size">
+            <button id="resizeBtn" class="btn">Resize</button>
+        </div>
+
+        <div>
+            <button id="exportBtn" class="btn ghost">Download PNG</button>
+        </div>
+    </div>
+
+    <div id="canvasWrap">
+        <!-- fixed visual area (you can change 512 to other value) -->
+        <canvas id="pixCanvas" width="512" height="512"></canvas>
+    </div>
+
+    <script>
+        /*
+          Simple pixel art editor:
+          - square grid (size controlled by input)
+          - draw by left mouse / touch (drag)
+          - right-click / two-finger touch to erase
+          - Clear Canvas and Resize
+          - Download PNG (exports at native grid resolution scaled up for visibility)
+        */
+
+        const canvas = document.getElementById('pixCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorInput = document.getElementById('color');
+        const clearBtn = document.getElementById('clearBtn');
+        const sizeInput = document.getElementById('sizeInput');
+        const resizeBtn = document.getElementById('resizeBtn');
+        const exportBtn = document.getElementById('exportBtn');
+
+        const CANVAS_PX = 512; // display pixels (keeps square)
+        canvas.width = CANVAS_PX;
+        canvas.height = CANVAS_PX;
+
+        let gridSize = parseInt(sizeInput.value) || 16;
+        let cellSize = CANVAS_PX / gridSize;
+        let grid = createEmptyGrid(gridSize);
+        let drawing = false;
+        let currentTool = 'brush'; // brush or eraser
+        let mouseButton = 0; // 0 left, 2 right
+
+        function createEmptyGrid(n) {
+            const g = new Array(n);
+            for (let y = 0; y < n; y++) {
+                g[y] = new Array(n).fill(null);
+            }
+            return g;
+        }
+
+        function drawGridOverlay() {
+            // draw colored squares then draw grid lines on top
+            ctx.clearRect(0, 0, CANVAS_PX, CANVAS_PX);
+            // pixels
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const c = grid[y][x];
+                    if (c) {
+                        ctx.fillStyle = c;
+                        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    } else {
+                        // leave transparent white background (or fill with white)
+                        ctx.fillStyle = '#ffffff00';
+                        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            // grid lines (light grey similar to screenshot)
+            ctx.strokeStyle = 'rgba(180,170,180,0.35)';
+            ctx.lineWidth = 1;
+            // vertical
+            for (let i = 0; i <= gridSize; i++) {
+                const x = Math.round(i * cellSize) + 0.5; // crisp line
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, CANVAS_PX);
+                ctx.stroke();
+            }
+            // horizontal
+            for (let j = 0; j <= gridSize; j++) {
+                const y = Math.round(j * cellSize) + 0.5;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(CANVAS_PX, y);
+                ctx.stroke();
+            }
+        }
+
+        function setCellFromEvent(e, isErase = false) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (e.touches && e.touches.length) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            const cx = clientX - rect.left;
+            const cy = clientY - rect.top;
+            const x = Math.floor(cx / cellSize);
+            const y = Math.floor(cy / cellSize);
+            if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) return false;
+            const newColor = isErase ? null : colorInput.value;
+            if (grid[y][x] === newColor) return false;
+            grid[y][x] = newColor;
+            drawGridOverlay();
+            return true;
+        }
+
+        // mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            mouseButton = e.button;
+            drawing = true;
+            const isErase = (e.button === 2); // right-click erase
+            setCellFromEvent(e, isErase);
+            e.preventDefault();
+        });
+        window.addEventListener('mouseup', () => { drawing = false; });
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+            const isErase = (mouseButton === 2);
+            setCellFromEvent(e, isErase);
+        });
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // disable default menu
+
+        // touch support
+        canvas.addEventListener('touchstart', (e) => {
+            drawing = true;
+            // if two fingers, treat as erase
+            const isErase = e.touches.length > 1;
+            setCellFromEvent(e, isErase);
+            e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => {
+            if (!drawing) return;
+            const isErase = e.touches.length > 1;
+            setCellFromEvent(e, isErase);
+            e.preventDefault();
+        }, { passive: false });
+        window.addEventListener('touchend', () => { drawing = false; });
+
+        // controls
+        clearBtn.addEventListener('click', () => {
+            if (!confirm('Clear canvas?')) return;
+            grid = createEmptyGrid(gridSize);
+            drawGridOverlay();
+        });
+
+        resizeBtn.addEventListener('click', () => {
+            const val = parseInt(sizeInput.value);
+            if (!val || val < 4 || val > 128) { alert('Choose a grid size between 4 and 128'); return; }
+            gridSize = val;
+            cellSize = CANVAS_PX / gridSize;
+            // optional: scale content? here we reset to empty grid (like screenshot behavior)
+            grid = createEmptyGrid(gridSize);
+            drawGridOverlay();
+        });
+
+        // export (download PNG)
+        exportBtn.addEventListener('click', () => {
+            // create small canvas at native grid resolution then upscale for download
+            const native = document.createElement('canvas');
+            native.width = gridSize;
+            native.height = gridSize;
+            const nctx = native.getContext('2d');
+            nctx.clearRect(0, 0, native.width, native.height);
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const c = grid[y][x];
+                    if (c) {
+                        nctx.fillStyle = c;
+                        nctx.fillRect(x, y, 1, 1);
+                    } else {
+                        nctx.clearRect(x, y, 1, 1);
+                    }
+                }
+            }
+            // upscale to make image visible (multiple of native)
+            const scale = Math.max(16, Math.floor(512 / gridSize)); // produce about 512px output
+            const out = document.createElement('canvas');
+            out.width = gridSize * scale;
+            out.height = gridSize * scale;
+            const octx = out.getContext('2d');
+            octx.imageSmoothingEnabled = false;
+            octx.drawImage(native, 0, 0, out.width, out.height);
+            const a = document.createElement('a');
+            a.href = out.toDataURL('image/png');
+            a.download = 'pixel-art.png';
+            a.click();
+        });
+
+        // initialize draw
+        drawGridOverlay();
+    </script>
+</body>
+
+</html>
