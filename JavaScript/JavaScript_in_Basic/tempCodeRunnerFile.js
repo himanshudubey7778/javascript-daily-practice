@@ -1,0 +1,1 @@
+favourite_heros.push(normal_Heros)
