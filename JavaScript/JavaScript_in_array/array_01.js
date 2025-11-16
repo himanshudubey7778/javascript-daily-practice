@@ -5,8 +5,8 @@ const normal_Heros = ["superman", "spiderman", "flash"]
 
 // favourite_heros.push(normal_Heros)
 
-// console.log(favourite_heros);
-// console.log(favourite_heros [3] [1]);
+console.log(favourite_heros);
+console.log(favourite_heros [3] [1]);
 
 
 //concat() is used to merge arrays without modifying the original ones.
