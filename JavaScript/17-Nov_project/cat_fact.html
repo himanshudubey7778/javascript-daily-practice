@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Fact</title>
+</head>
+<body>
+    <p id="fact"></p>
+
+    <script>
+        const p = document.getElementById('fact');
+
+        function getFact() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://catfact.ninja/fact");
+            xhr.onload = () => {
+                p.innerText = JSON.parse(xhr.responseText).fact;
+            }
+            xhr.send();
+        }
+
+        // Call function one time when page loads
+        getFact();
+    </script>
+</body>
+</html>

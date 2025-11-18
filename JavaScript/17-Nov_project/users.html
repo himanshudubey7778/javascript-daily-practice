@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dropdown</title>
+</head>
+<body>
+
+    <h3 id="statusText">Loading...</h3>
+
+    <select id="dropdown"></select>
+
+    <pre id="Output"></pre>
+
+    <script>
+        const dropdown = document.getElementById('dropdown');
+        const output = document.getElementById('Output');
+        const statusText = document.getElementById('statusText');
+
+        function populateUsers() {
+            statusText.textContent = "Loading Users...";
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', "https://jsonplaceholder.typicode.com/users");
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const users = JSON.parse(xhr.responseText);
+
+                        dropdown.innerHTML = '<option value="">-- choose a user --</option>';
+
+                        users.forEach(user => {
+                            const opt = document.createElement('option');
+                            opt.textContent = user.name;
+                            opt.value = user.id;
+                            dropdown.appendChild(opt);
+                        });
+
+                        statusText.textContent = "Users loaded.";
+                        output.textContent = "Choose a user from the dropdown.";
+
+                    } catch (error) {
+                        statusText.textContent = "Error parsing user data.";
+                        console.error(error);
+                    }
+                } else {
+                    statusText.textContent = "Failed to load users.";
+                }
+            };
+
+            xhr.onerror = () => {
+                statusText.textContent = "Network error.";
+            };
+
+            xhr.send();
+        }
+
+
+        // When user is selected from dropdown
+        dropdown.addEventListener("change", () => {
+            const id = dropdown.value;
+
+            if (!id) {
+                output.textContent = "No user selected.";
+                return;
+            }
+
+            output.textContent = "Loading user details...";
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `https://jsonplaceholder.typicode.com/users/${id}`);
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    const user = JSON.parse(xhr.responseText);
+                    output.textContent = JSON.stringify(user, null, 2);
+                } else {
+                    output.textContent = "Error loading user details.";
+                }
+            };
+
+            xhr.send();
+        });
+
+        // Call the function when the page loads
+        populateUsers();
+    </script>
+
+</body>
+</html>

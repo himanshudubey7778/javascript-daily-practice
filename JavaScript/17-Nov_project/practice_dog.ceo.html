@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dog CEO API — Demo</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa6b2;--accent:#60a5fa}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0;background:linear-gradient(180deg,#071022 0%,#071829 100%);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .app{width:100%;max-width:920px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    header h1{font-size:20px;margin:0}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:14px;border-radius:10px}
+    select, button, input{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:inherit;font-size:14px}
+    button{cursor:pointer}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr} .controls{width:100%}}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+    .gallery img{width:100%;height:150px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+    .side{display:flex;flex-direction:column;gap:12px}
+    .info{font-size:13px;color:var(--muted)}
+    .loader{height:40px;display:flex;align-items:center;gap:8px}
+    .small{font-size:13px}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="card" style="display:flex;align-items:center;gap:12px">
+        <img src="https://dog.ceo/img/dog-api-logo.png" alt="Dog CEO" width="44" height="44" style="border-radius:8px;background:#fff"/>
+        <div>
+          <h1>Dog CEO API — Demo</h1>
+          <div class="info">Fetch random dog images & browse by breed (uses <code>https://dog.ceo</code>)</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid">
+      <section>
+        <div class="card controls" style="margin-bottom:12px;align-items:center;">
+          <select id="breedSelect" aria-label="Choose dog breed">
+            <option value="">-- Select breed (or choose Random) --</option>
+          </select>
+          <button id="randomBtn">Random dog</button>
+          <button id="fetchBtn">Fetch</button>
+          <input id="count" type="number" min="1" max="12" value="6" title="How many images to fetch" style="width:86px"/>
+          <div id="status" class="small" style="margin-left:auto;color:var(--muted)">Ready</div>
+        </div>
+
+        <div class="card" style="padding:12px">
+          <div id="gallery" class="gallery" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <strong>How to use</strong>
+          <p class="info">1) Choose a breed from the dropdown (sub-breeds are grouped). 2) Set the number of images (1–12) and click Fetch. 3) Or click Random dog for a surprise image.</p>
+        </div>
+
+        <div class="card">
+          <strong>Breed list</strong>
+          <div id="breedCount" class="info small">Loading breeds...</div>
+        </div>
+
+        <div class="card">
+          <strong>Example code note</strong>
+          <p class="info small">This demo calls the public Dog CEO API (no API key required). It uses the endpoints <code>/breeds/list/all</code>, <code>/breeds/image/random</code>, and <code>/breed/{breed}/images/random</code>.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // Small helper to fetch JSON with error handling
+    async function fetchJson(url){
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('Network error: ' + res.status);
+      return res.json();
+    }
+
+    const breedSelect = document.getElementById('breedSelect');
+    const gallery = document.getElementById('gallery');
+    const status = document.getElementById('status');
+    const randomBtn = document.getElementById('randomBtn');
+    const fetchBtn = document.getElementById('fetchBtn');
+    const countInput = document.getElementById('count');
+    const breedCountEl = document.getElementById('breedCount');
+
+    // Initialize app: load breed list
+    async function init(){
+      setStatus('Loading breeds...');
+      try{
+        const data = await fetchJson('https://dog.ceo/api/breeds/list/all');
+        if(data.status !== 'success') throw new Error('API returned error');
+        populateBreeds(data.message);
+        setStatus('Breeds loaded');
+      }catch(err){
+        setStatus('Failed loading breeds');
+        breedCountEl.textContent = 'Error loading breed list';
+        console.error(err);
+      }
+    }
+
+    function setStatus(text){ status.textContent = text; }
+
+    function populateBreeds(obj){
+      // obj = {hound: ["afghan","basset"], bulldog: ["boston","english","french"] ...}
+      const breeds = Object.keys(obj);
+      breedCountEl.textContent = breeds.length + ' breeds available';
+      // Clear
+      breedSelect.innerHTML = '<option value="">-- Select breed (or choose Random) --</option>';
+      // Add an option to fetch random image(s)
+      const optRandom = document.createElement('option'); optRandom.value = '__random__'; optRandom.textContent = 'Random (any breed)';
+      breedSelect.appendChild(optRandom);
+
+      // Add breeds, grouping sub-breeds as optgroups
+      breeds.sort().forEach(b => {
+        const subs = obj[b];
+        if(subs && subs.length){
+          const og = document.createElement('optgroup');
+          og.label = b;
+          subs.sort().forEach(sb => {
+            const opt = document.createElement('option');
+            opt.value = `${b}/${sb}`; // use slash to denote sub-breed
+            opt.textContent = sb + ' ' + b; // show like "afghan hound"
+            og.appendChild(opt);
+          });
+          // also add the parent breed itself as an option
+          const parentOpt = document.createElement('option');
+          parentOpt.value = b;
+          parentOpt.textContent = b + ' (all)';
+          og.appendChild(parentOpt);
+
+          breedSelect.appendChild(og);
+        } else {
+          const opt = document.createElement('option');
+          opt.value = b;
+          opt.textContent = b;
+          breedSelect.appendChild(opt);
+        }
+      });
+    }
+
+    // Build endpoint based on selection and count
+    function buildUrl(selection, count){
+      if(!selection || selection === '__random__'){
+        return count === 1 ? 'https://dog.ceo/api/breeds/image/random' : `https://dog.ceo/api/breeds/image/random/${count}`;
+      }
+      // selection could be "breed" or "breed/subbreed"
+      if(selection.includes('/')){
+        const [breed, sub] = selection.split('/');
+        return count === 1 ? `https://dog.ceo/api/breed/${breed}/${sub}/images/random` : `https://dog.ceo/api/breed/${breed}/${sub}/images/random/${count}`;
+      }
+      const breed = selection;
+      return count === 1 ? `https://dog.ceo/api/breed/${breed}/images/random` : `https://dog.ceo/api/breed/${breed}/images/random/${count}`;
+    }
+
+    async function fetchImages(){
+      const sel = breedSelect.value;
+      let count = parseInt(countInput.value,10) || 1;
+      if(count < 1) count = 1;
+      if(count > 12) count = 12;
+      setStatus('Fetching images...');
+      try{
+        const url = buildUrl(sel, count);
+        const data = await fetchJson(url);
+        if(data.status !== 'success') throw new Error('API error');
+        // data.message may be a string (single URL) or array
+        let imgs = Array.isArray(data.message) ? data.message : [data.message];
+        renderGallery(imgs);
+        setStatus('Images loaded');
+      }catch(err){
+        setStatus('Fetch failed');
+        console.error(err);
+      }
+    }
+
+    function renderGallery(urls){
+      gallery.innerHTML = '';
+      if(!urls || urls.length === 0){
+        gallery.textContent = 'No images';
+        return;
+      }
+      urls.forEach(u => {
+        const img = document.createElement('img');
+        img.src = u;
+        img.alt = 'Dog image';
+        img.loading = 'lazy';
+        gallery.appendChild(img);
+      });
+    }
+
+    // Events
+    randomBtn.addEventListener('click', async () => {
+      breedSelect.value = '__random__';
+      countInput.value = 1;
+      await fetchImages();
+    });
+
+    fetchBtn.addEventListener('click', fetchImages);
+
+    // init
+    init();
+  </script>
+</body>
+</html>
