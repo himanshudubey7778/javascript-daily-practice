@@ -55,6 +55,16 @@ console.log(Object.entries(instaUser));
 console.log(instaUser.hasOwnProperty('isLoggedIn'));
 
 
+const course = {
+    coursename: "Js in basic",
+    price: "999",
+    courseInstructor: "himanshu"
+}
+
+// course.courseInstructor
+
+
+
 
 
 
