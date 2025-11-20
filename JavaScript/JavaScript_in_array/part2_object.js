@@ -46,14 +46,17 @@ const user = [
 
 
 // users[1].email
-console.log(instaUser);
+// console.log(instaUser);
 
-console.log(Object.keys(instaUser));
-console.log(Object.values(instaUser));
-console.log(Object.entries(instaUser));
+// console.log(Object.keys(instaUser));
+// console.log(Object.values(instaUser));
+// console.log(Object.entries(instaUser));
 
-console.log(instaUser.hasOwnProperty('isLoggedIn'));
+// console.log(instaUser.hasOwnProperty('isLoggedIn'));
 
+
+//+++++++++++++++++ Destructuring Method ++++++++++
+// course.courseInstructor
 
 const course = {
     coursename: "Js in basic",
@@ -62,6 +65,37 @@ const course = {
 }
 
 // course.courseInstructor
+
+const{courseInstructor: instructor} = course
+
+console.log(instructor);
+
+
+const navbar = ({company}) => {
+
+}
+
+navbar(company = "himanshu")
+
+// console.log(company);
+
+// {
+//     "name":  "himanshu",
+//     "course": "Java Script 2025",
+//     "price": "free"
+// }
+
+[
+    {},
+    {},
+    {}
+]
+
+
+
+
+
+
 
 
 
