@@ -11,6 +11,7 @@ async function fetchData() {
     console.log("after both!");
     console.log(userData);
     
+    
 }
 
 async function betterFetchData() {
