@@ -1,1 +1,3 @@
-console.log(name); 
+greet("Himanshu");
+// greet("ujjval");
+// greet("Prince");

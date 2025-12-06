@@ -130,10 +130,97 @@ let status = (age >= 18) ? "Prince" : "Minor";
 // console.log(5 === "5");
 
 //++++Classic for loop+++
-let actor = ["akshay", "Allu Arjun", "Salman Khan", "NTR"];
-for(let i = 0; i < actor.length; i++) {
-    console.log(actor[i]);c
+// let actor = ["akshay", "Allu Arjun", "Salman Khan", "NTR"];
+// for(let i = 0; i < actor.length; i++) {
+//     console.log(actor[i]);c
+// }
+
+// let total = [20, 30, 80, 40, 30];
+// let count = 0;
+// for(let i = 0; i < total.length; i++) {
+//     if(total[i] < 50) {
+//     count = count + 1;
+//     console.log( count);
+//     }
+// }
+
+
+// let total = [20, 30, 80, 40, 30];
+// let max = 0;
+// for(let i = 0; i < total.length; i++) {
+//     if(total[i] > max) {
+//     max = total[i];
+//     console.log( max);
+//     }
+// }
+
+// +++++function+++++++
+// function Mydream() {
+//     console.log("I will go abroad");
+//     console.log("I will make my family proud");      
+// }
+// Mydream();
+// greet("Himanshu");
+// greet("ujjval");
+// greet("Prince");
+
+//++++++Parameter/Argument+++++
+
+// function addNumbers(num1, num2) {
+//     console.log((num1 + num2));
+// }
+
+// addNumbers(10, 20);
+// addNumbers(10, 40);
+
+//+++++Small Practice Calculator+++++++
+
+// function addNumbers(num1, num2) {
+//     // console.log(num1 + num2);
+//     return num1 + num2;
+// }
+// let MyAnswer = addNumbers(20, 20);
+// console.log(MyAnswer);
+
+//++++Practice calculator number++++++++
+
+// function MyBalance(SBI1, BOB2) {
+//     return SBI1 + BOB2;
+// }
+
+// let MyBank = MyBalance(10383938, 87242472);
+// console.log(MyBank);
+
+
+// function marketJao() {
+//     let item = "Apple";
+//     console.log(item);
+// }
+
+// let mereHaathMein = marketJao();
+
+// console.log("mere paas kya hai?");
+
+//++++Right Code return++++
+
+function marketJao() {
+    let item = "Apple";
+    return item;
 }
+
+let mereHaathMein = marketJao();
+
+console.log("Mere paas kya hai? ", mereHaathMein);
+
+
+
+
+
+
+
+
+
+    
 
 
 
