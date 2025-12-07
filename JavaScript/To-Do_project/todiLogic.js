@@ -14,12 +14,33 @@ function showAllTasks() {
         
     }
     console.log("-----------------------");
+
+}
+    
+function deleteTask(index) {
+    let removedItem = myTasks.splice(index, 1);
+    console.log("Task Deleted: " + removedItem);
     
 }
+
+
+// deleteTask(0);
 showAllTasks();
 
-    addTask("Project Banana");
-    addTask("Englsih Practice");
+addTask("shopping karna hai");
+addTask("market jana hai 3 pm me ");
 
-    showAllTasks();
+showAllTasks();
+
+function updateTask(index, newWork) {
+    let oldWork = myTasks[index];
+    myTasks[index] = newWork;
     
+    console.log(`Updated: '${oldWork}' all complete ' ${newWork}'`);
+    
+}
+
+updateTask(3, "Gym Is important");
+updateTask(4, "passion Is important");
+
+showAllTasks();
