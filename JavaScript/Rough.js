@@ -205,7 +205,7 @@ let status = (age >= 18) ? "Prince" : "Minor";
 
 function marketJao() {
     let item = "Apple";
-    return item;
+    return item; 
 }
 
 let mereHaathMein = marketJao();
