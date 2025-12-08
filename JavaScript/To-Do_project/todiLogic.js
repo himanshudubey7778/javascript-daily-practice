@@ -44,3 +44,28 @@ updateTask(3, "Gym Is important");
 updateTask(4, "passion Is important");
 
 showAllTasks();
+
+function findTask(keyword) {
+    console.log(` Searching for: '${keyword}'...`);
+
+    let whatHappen = false;
+
+    for(let i = 0; i < myTasks.length; i++) {
+
+        if (myTasks[i].includes(keyword)) {
+            console.log(`All Complete! Index ${i} but: "${myTasks[i]}"`);
+            whatHappen = true;
+            
+        }
+    }
+
+    if(whatHappen == false) {
+        console.log("This task is no list added.");
+        
+    }
+}
+
+findTask("Gym");
+
+showAllTasks();
+
