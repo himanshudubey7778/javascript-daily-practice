@@ -1,0 +1,4 @@
+let name = "Hiamsnhu";
+// let age = 19;
+
+// console.log("Hello, my name is " + name + " and I am " + age + " Year old.");
