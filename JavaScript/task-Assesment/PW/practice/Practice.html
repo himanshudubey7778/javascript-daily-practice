@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+</head>
+<body>
+    <h1 id="message">Now Start Study</h1>
+    <button id="loginBtn">Click Me</button>
+
+    <script>
+        // 1. Catch Element
+        let message = document.querySelector("#message");
+        let btn = document.querySelector("#loginBtn");
+
+        // 2. Button on the click event apply
+        btn.addEventListener("click", () => {
+            // 3. Action liya
+            message.innerText = "Exam crack do it!";
+            message.style.backgroundColor = "yellow";
+        });
+
+    </script>
+</body>
+</html>
