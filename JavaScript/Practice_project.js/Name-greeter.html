@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+</head>
+<body>
+    <input type="text" id="myInput" placeholder="Himanshu...">
+
+    <button id="btn">Submit</button>
+
+    <h1 id="output">Hello...</h1>
+
+    <script>
+
+        //step1. All Catch step
+        let inputField = document.querySelector("#myInput");
+        let myButton = document.querySelector("#btn");
+        let myHeading = document.querySelector("#output");
+
+        //step 2: Button put click apply
+        myButton.addEventListener("click", () => {
+
+            //step: 3 Input box inside of value out
+            let userName = inputField.value;
+
+            //step: 4 Heading mein dikha do
+            myHeading.innerText = `Hello, ${userName}!`;
+
+            // can chenges is deep 
+            myHeading.style.color = "green";
+            inputField.value = "";
+        });
+    </script>
+</body>
+</html>

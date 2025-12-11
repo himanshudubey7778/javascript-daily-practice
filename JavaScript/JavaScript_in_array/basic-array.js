@@ -5,7 +5,7 @@
 // console.log(friends[0]);
 
 function asyncTask() {
-    return new Promise((rej)=> {
+    return new Promise((res, rej)=> {
         rej();
     });
 }
