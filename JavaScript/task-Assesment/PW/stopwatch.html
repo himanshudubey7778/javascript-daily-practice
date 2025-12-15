@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Stopwatch</title>
+
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        #display {
+            font-size: 80px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #00e676;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        #startBtn { background-color: #29b6f6; color: white; }
+        #stopBtn { background-color: #ef5350; color: white; }
+        #resetBtn { background-color: #ffca28; color: black; } 
+    </style>
+</head>
+<body>
+    <h1> JS Stopwatch</h1>
+
+    <div id="display">00:00:00</div>
+
+    <div id="buttons">
+        <button id="startBtn">Start</button>
+        <button id="stopBtn">Stop</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+
+    <script>
+        // HTML elements ko pakdo
+        let display = document.getElementById('display');
+        let startBtn = document.getElementById('startBtn');
+        let stopBtn = document.getElementById('stopBtn');
+        let resetBtn = document.getElementById('resetBtn');
+
+        // Variable (Memory)
+        let timer = null; 
+        let [seconds, minutes, hours] = [0, 0, 0]; 
+
+        // 1. Logic Function
+        function stopwatchLogic() {
+            seconds++; 
+
+            // Agar seconds 60 hue
+            if (seconds == 60) {
+                seconds = 0; // Value reset ki
+                minutes++;
+
+                // 🔴 FIX 2: Yahan minutes check karna hai, seconds nahi
+                if (minutes == 60) {
+                    minutes = 0;
+                    hours++;
+                }
+            }
+
+            // Formatting
+            let h = hours < 10 ? "0" + hours : hours;
+            let m = minutes < 10 ? "0" + minutes : minutes;
+            let s = seconds < 10 ? "0" + seconds : seconds;
+            
+            display.innerText = `${h}:${m}:${s}`;
+        }
+
+        // 2. Start Button
+        startBtn.addEventListener('click', () => {
+            if (timer !== null) {
+                clearInterval(timer); 
+            }
+            timer = setInterval(stopwatchLogic, 1000);
+        });
+
+        // 3. Stop Button
+        stopBtn.addEventListener('click', () => {
+            clearInterval(timer);
+        });
+
+        // 4. Reset Button
+        resetBtn.addEventListener('click', () => {
+            clearInterval(timer); 
+            [seconds, minutes, hours] = [0, 0, 0];
+            // 🔴 FIX 3: diaplay -> display spelling mistake fixed
+            display.innerText = "00:00:00"; 
+        });
+    </script>
+</body>
+</html>

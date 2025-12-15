@@ -1,117 +1,170 @@
-// storageService
+// 1. GLOBAL CONSTANTS 
+const localStorageKeys = {
+    BLOCKED_SITES: "blockedSites",
+    SITE_USAGE: "siteUsage"
+};
 
+// 2. STORAGE SERVICE
 class storageService {
-  // store
-  static async save(key, value) {
-    await chrome.storage.local.set({ [key]: value });
-  }
-
-  // load
-
-  static async load(key) {
-    const data = await chrome.storage.local.get([key]);
-
-    return data[key] ?? {};
-  }
-}
-//features
-
-// siteBlocker
-
-
-class siteBlocker {
-  constructor() {
-    this.blockList = new Set();
-    this.load();
-  }
-
-  async load() {
-    this.blockList = new Set(storageService.load("blockedSites"));
-  }
-
-  async addSites(url) {
-    this.blockList.add(url);
-    await storageService.save(blockSitesKey, this.blockList);
-  }
-
-  async removeSite(url) {
-    if (this.blockList.has(url)) this.blockList.delete(url);
-
-    await storageService.save(blockedSitesKey, this.blockList);
-  }
-
-  isBlocked(url) {
-    for (let subUrl of this.blockList) {
-      if (url.includes(subUrl)) return true;
+    static async save(key, value) {
+        await chrome.storage.local.set({ [key]: value });
     }
 
-    return false;
-  }
+    static async load(key) {
+        const data = await chrome.storage.local.get([key]);
+        return data[key] ?? {}; // Null check
+    }
 }
 
-// UsageTracker
+// 3. SITE BLOCKER
+class siteBlocker {
+    constructor() {
+        this.blockList = new Set(); // Unique list
+        this.load();
+    }
 
+    async load() {
+        // Data load karke Set mein convert kiya
+        const data = await storageService.load(localStorageKeys.BLOCKED_SITES);
+        this.blockList = new Set(Array.isArray(data) ? data : []);
+    }
+
+    async addSites(url) {
+        if (!this.blockList.has(url)) {
+            this.blockList.add(url);
+            // Array mein convert karke save kiya
+            await storageService.save(localStorageKeys.BLOCKED_SITES, [...this.blockList]);
+            await this.applyBlocking(); // Turant block rule update karein
+        }
+    }
+
+    async removeSite(url) {
+        if (this.blockList.has(url)) {
+            this.blockList.delete(url);
+            await storageService.save(localStorageKeys.BLOCKED_SITES, [...this.blockList]);
+            await this.applyBlocking(); // Rule update
+        }
+    }
+
+    isBlocked(url) {
+        for (let subUrl of this.blockList) {
+            if (url.toLowerCase().includes(subUrl.toLowerCase())) return true;
+        }
+        return false;
+    }
+
+    async applyBlocking() {
+        // 1. Purane Rules nikalo
+        const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+        const ruleIDTORemove = existingRules.map(rule => rule.id);
+
+        // 2. Naye Rules banao
+        const newRules = [...this.blockList].map((site, index) => {
+            return {
+                id: index + 1,
+                priority: 1,
+                action: { type: "block" },
+                condition: {
+                    // Spelling Errors Fixed Here:
+                    urlFilter: `*://*.${site}/*`, // urlFliter -> urlFilter
+                    resourceTypes: [             // resourceType -> resourceTypes
+                        "main_frame",            // amin_frame -> main_frame
+                        "sub_frame",
+                        "stylesheet",
+                        "script",
+                        "image",
+                        "font",
+                        "object",
+                        "xmlhttprequest",
+                        "ping",
+                        "csp_report",
+                        "media",
+                        "websocket",             // worksocket -> websocket
+                        "webtransport",
+                        "other"
+                    ]
+                }
+            };
+        });
+
+        // 3. Update Rules (Remove Old + Add New)
+        await chrome.declarativeNetRequest.updateDynamicRules({
+            removeRuleIds: ruleIDTORemove, // Ye line zaroori thi add karna
+            addRules: newRules
+        });
+    }
+}
+
+// 4. USAGE TRACKER
 class UsageTracker {
     constructor() {
         this.usage = {};
-        init();
+        this.init(); // 'init()' -> 'this.init()' correction
     }
 
     async init() {
-        this.usage = await storageService.load(localStorage.Site_USAGE);
-        chrome.tabs.onActivate.addListener(tabsInfo => this.track(tabsInfo)); 
+        this.usage = await storageService.load(localStorageKeys.SITE_USAGE);
+        // Bind 'this' to keep context
+        chrome.tabs.onActivate.addListener((tabsInfo) => this.track(tabsInfo));
     }
 
     async track(tabsInfo) {
-        chrome.tabs.get(tabsInfo.tabID, async (tab)=>{
-            if(!tab?.url)
-                return;
+        chrome.tabs.get(tabsInfo.tabId, async (tab) => {
+            if (!tab?.url) return;
 
-            let hostName = new URL(tab.url).hostname;
-            let currentTime = this.usage[hostName] ?? 0;
-            this.usage[hostName] = currentTime + 1;
+            // URL se sirf domain name nikala (e.g., google.com)
+            try {
+                let hostName = new URL(tab.url).hostname;
+                let currentTime = this.usage[hostName] ?? 0;
+                this.usage[hostName] = currentTime + 1;
 
-            await storageService.save(localStorageKeys.SITE_USAGE, this.usage);
+                await storageService.save(localStorageKeys.SITE_USAGE, this.usage);
+            } catch (e) {
+                // Invalid URL handle karne ke liye
+                console.log("Invalid URL ignored");
+            }
         });
     }
 }
 
-//pomodoroManager (timer)
-
+// 5. POMODORO MANAGER
 class pomodoroManager {
-  constructor() {
-    this.timeLeft = 0;
-  }
+    constructor() {
+        this.timeLeft = 0;
+        this.interval = null; 
+    }
 
-  start(minutes) {
-    this.timeLeft = minutes * 60;
+    start(minutes) {
+        this.stop(); // Pehle agar kuch chal raha ho toh roko
+        this.timeLeft = minutes * 60;
 
-    chrome.storage.local.set({ promodoroTime: this.timeLeft });
+        chrome.storage.local.set({ promodoroTime: this.timeLeft });
 
-    setInterval(() => {
-      this.timeLeft--;
+        // 'this.interval' 
+        this.interval = setInterval(() => {
+            this.timeLeft--;
 
-      chrome.storage.local.set({ promodoroTime: this.timeLeft });
+            chrome.storage.local.set({ promodoroTime: this.timeLeft });
 
-      if (this.timeLeft <= 0) {
-        this.stop();
+            if (this.timeLeft <= 0) {
+                this.stop();
 
-        chrome.notification.create({
-          type: "basic",
-          iconUrl:
-            "https://lh3.googleusercontent.com/gg-dl/ABS2GSmIBnJ40VZFxoJLoOxafmPLF_i6z33XKpTyV371LWDtF0HNxHuHDvzu_UOmS9Cv91_EW8Wy5COayOBmkl07EdLNQ9jX7QbHBlswLspgiv-dxzCP9k33gn9xxdlzKoYADse3Eo4YNIXdiXTyV87qo5ikWwZb-x2PC17m2h8jcZSGajtWmw=s1024-rj",
-            title: "Pomodoro Complete!",
-            message: "Take a break"
-        });
-      }
-    }, 1000);
-  }
+                chrome.notifications.create({ // chrome.notification -> chrome.notifications
+                    type: "basic",
+                    iconUrl: "images/icon.png", // Icon URL thoda safe kar diya
+                    title: "Pomodoro Complete!",
+                    message: "Take a break"
+                });
+            }
+        }, 1000);
+    }
 
-  stop() {
-    clearInterval(this.interval);
-    this.interval=null;
-    this.timeLeft=0;
-  }
+    stop() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+        this.timeLeft = 0;
+        chrome.storage.local.set({ promodoroTime: 0 });
+    }
 }
-
-// business logic
