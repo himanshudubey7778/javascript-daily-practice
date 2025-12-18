@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Colors</title>
+    <style>
+        body {
+            height : 100vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            transition: background-color 0.5s; 
+        }
+
+        h2 {
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 40px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+        }
+
+        button {
+            padding: 15px 30px ;
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #000;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    
+    <h2 id="colorCode">#FFFFFF</h2>
+
+    <button id="btn">Change Color</button>
+
+    <script>
+        const btn = document.getElementById("btn");
+        const colorCode = document.getElementById("colorCode");
+
+        const hexChars = "0123456789ABCDEF";
+
+        const hecChars = "0123456789ABCDEF";
+
+        const changeColor = () => {
+            let color = "#";
+
+            for(let i = 0; i < 6; i++) {
+
+                let randomIdx = Math.floor(Math.random() * 16);
+
+                color = color + hexChars[randomIdx];
+            }
+
+            document.body.style.backgroundColor = color;
+            
+
+
+            colorCode.innerText = color;
+        };
+        
+        btn.addEventListener("click", changeColor);
+    </script>
+</body>
+</html>
