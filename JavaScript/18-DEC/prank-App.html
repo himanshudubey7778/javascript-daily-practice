@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 300px;
+        }
+
+        h1 {
+            color: #ff4b5c;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        input:focus { border-color: #ff4b5c;}
+
+        button {
+            background-color: #ff4b6c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        button:hover { transform: scale(1.1); background-color: #ff1f3a;}
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Love Calculator</h1>
+
+        <input type="text" id="yourName" placeholder="Your Name">
+        <input type="text" id="crushName" placeholder="Partner Name">
+
+        <button onclick="calculateLove()">Calculate</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculateLove() {
+            const name1 = document.getElementById("yourName").value;
+            const name2 = document.getElementById("crushName").value;
+
+            if(name1 === "" || name2 === "") {
+                alert("Oh! Brother, Name please Write!")
+                return;
+            }
+
+            const loveScore = Math.floor(Math.random() * 100) + 1;
+
+            const resultDiv = document.getElementById("result");
+
+            let message = "";
+            if(loveScore > 80) {
+                message = " God Is Happpy!";
+            } else if(loveScore > 50) {
+                message = "Nice Bonding is!";
+            } else {
+                message = "Oh brother please left!"
+            }
+
+            resultDiv.innerText = `${name1} ${name2} = ${loveScore}%\n${message}`;
+
+
+        }
+    </script>
+    
+</body>
+</html>
