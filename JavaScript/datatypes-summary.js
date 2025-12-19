@@ -27,6 +27,11 @@ let myObj = {
 
 }
 
+console.log(heros);
+
+console.log(typeof(heros));
+
+
 const myFunction = function(){
     console.log("hello world!");
 }
@@ -49,7 +54,7 @@ console.log(this);
 let myYoutubename = "Himanshudubeydotcom"
 
 let anothername = myYoutubename
-anothername = "ChaiaurCode"
+anothername = "PizzaAurCode"
 
 console.log(myYoutubename);
 console.log(anothername);
