@@ -24,10 +24,13 @@ console.log(newDate.getDay() + 2);
 
 // `${newDate.getDay()} and the time`
 
-newDate.toLocaleDateString('default',{
+newDate.toLocaleString('default',{
     weekday: "long",
-    timeZone: "now",
+    // timeZone: "now",
 }) // important case in jS
+
+console.log(newDate);
+
 
 
 
