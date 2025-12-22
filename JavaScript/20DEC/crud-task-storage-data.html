@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permanent-To-Do List</title>
+    <style>
+        body {
+            background-color: #2c3e50;
+            font-family: 'Segoe Ui', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        h2 { text-align: center; color: #34495e; }
+
+        .input-group { display: flex; gap: 10px;}
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button:hover { background-color: #219150; }
+
+        ul { list-style: none; padding: 0; margin-top: 20px; }
+
+        li {
+            background: #ecf0f1;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        .delete-btn {
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Saved Tasks</h2>
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Task Wite...">
+            <button onclick="addTask()">add</button>
+        </div>
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const input = document.getElementById("taskInput");
+        const list = document.getElementById("taskList");
+
+        showTask();
+
+        function addTask() {
+            if(input.value === "") {
+                alert("Brother, please write it!");
+                return;
+            }
+
+            let li = document.createElement("li");
+            li.innerHTML = `${input.value} <span class="delete-btn" onclick="removeTask(this)">❌</span>`;
+            list.appendChild(li);
+
+            input.value = ""
+
+            saveData();
+        }
+
+        function removeTask(element) {
+            element.parentElement.remove();
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem("data", list.innerHTML);
+        }
+
+
+        function showTask() {
+            list.innerHTML = localStorage.getItem("data");
+        }
+
+        input.addEventListener("keypress", function(e) {
+            if(e.key === "Enter") addTask();
+        });
+    </script>
+</body>
+</html>

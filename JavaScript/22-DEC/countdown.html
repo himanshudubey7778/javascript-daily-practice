@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year Countdown 2026</title>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #FFFFFF;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ffcc;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 100px;
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
+
+        .number {
+            font-size: 3rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .label {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>2026 coming In...</h1>
+
+    <div class="container">
+        <div class="box">
+            <span class="number" id="days">00</span>
+            <span class="label">Days</span>
+        </div>
+        <div class="box">
+            <span class="number" id="hours">00</span>
+            <span class="label">Hours</span>
+        </div>
+        <div class="box">
+            <span class="number" id="minute">00</span>
+            <span class="label">Mins</span>
+        </div>
+        <div class="box">
+            <span class="number" id="seconds">00</span>
+            <span class="label">Secs</span>
+        </div>
+    </div>
+
+    <script>
+        const newYearDate = new Date("Jan 1, 2026 00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+
+            const gap = newYearDate - now;
+
+            if(gap < 0) {
+                document.querySelector("h1").innerText = "HAPPY NEW YEAR! 🎆";
+                return;
+            }
+
+            const second = 1000;
+            const minute = second * 60;
+            const hour = minute * 60;
+            const day = hour * 24;
+
+            const d = Math.floor(gap / day);
+            const h = Math.floor((gap % day) / hour);
+            const m = Math.floor((gap % hour) / minute);
+            const s = Math.floor((gap % minute) / second);
+
+            document.getElementById("days").innerText = d;
+            document.getElementById("hours").innerText = h;
+            document.getElementById("minute").innerText = m;
+            document.getElementById("seconds").innerText = s;
+        }
+
+        setInterval(updateCountdown, 1000);
+
+        updateCountdown();
+    </script>
+</body>
+</html>

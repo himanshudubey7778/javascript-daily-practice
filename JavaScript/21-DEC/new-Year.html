@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VIP New Year 2025 🎆</title>
+    <style>
+        body {
+            background: #000;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            cursor: crosshair; /* Hacker feel */
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+            pointer-events: none; /* Click canvas par pass hoga */
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 5rem;
+            margin: 0;
+            background: -webkit-linear-gradient(#fff, #ffdf00); /* Gold Text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 223, 0, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+
+        p {
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            color: #ccc;
+            margin-top: 10px;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ff0055; }
+            to { text-shadow: 0 0 50px #ffdf00, 0 0 10px white; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <h1>HAPPY NEW YEAR<br>2026</h1>
+        <p>CLICK ANYWHERE TO CELEBRATE</p>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // Setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Variables
+        const fireworks = [];
+        const particles = [];
+        let hue = 120;
+        let limiterTotal = 5;
+        let limiterTick = 0;
+        let timerTotal = 80;
+        let timerTick = 0;
+        let mousedown = false;
+        let mx, my;
+
+        // Utils
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function calculateDistance(p1x, p1y, p2x, p2y) {
+            let xDistance = p1x - p2x;
+            let yDistance = p1y - p2y;
+            return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+        }
+
+        // --- FIREWORK CLASS (Rocket) ---
+        class Firework {
+            constructor(sx, sy, tx, ty) {
+                this.x = sx;
+                this.y = sy;
+                this.sx = sx;
+                this.sy = sy;
+                this.tx = tx;
+                this.ty = ty;
+                this.distanceToTarget = calculateDistance(sx, sy, tx, ty);
+                this.distanceTraveled = 0;
+                this.coordinates = [];
+                this.coordinateCount = 3;
+                
+                // Trail coordinates setup
+                while(this.coordinateCount--) {
+                    this.coordinates.push([this.x, this.y]);
+                }
+                this.angle = Math.atan2(ty - sy, tx - sx);
+                this.speed = 2;
+                this.acceleration = 1.05;
+                this.brightness = random(50, 70);
+                this.targetRadius = 1;
+            }
+
+            update(index) {
+                // Update coordinates for trail
+                this.coordinates.pop();
+                this.coordinates.unshift([this.x, this.y]);
+
+                // Speed up rocket
+                this.speed *= this.acceleration;
+                
+                let vx = Math.cos(this.angle) * this.speed;
+                let vy = Math.sin(this.angle) * this.speed;
+                
+                this.distanceTraveled = calculateDistance(this.sx, this.sy, this.x + vx, this.y + vy);
+
+                // Check if reached target
+                if(this.distanceTraveled >= this.distanceToTarget) {
+                    // Create explosion
+                    createParticles(this.tx, this.ty);
+                    fireworks.splice(index, 1);
+                } else {
+                    this.x += vx;
+                    this.y += vy;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + this.brightness + '%)';
+                ctx.stroke();
+            }
+        }
+
+        // --- PARTICLE CLASS (Explosion Pieces) ---
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.coordinates = [];
+                this.coordinateCount = 5;
+                while(this.coordinateCount--) {
+                    this.coordinates.push([this.x, this.y]);
+                }
+                // Random direction explosion
+                this.angle = random(0, Math.PI * 2);
+                this.speed = random(1, 10);
+                this.friction = 0.95; // Hawa ka dabav (slow down)
+                this.gravity = 1;     // Niche girega
+                this.hue = random(hue - 20, hue + 20);
+                this.brightness = random(50, 80);
+                this.alpha = 1;       // Opacity
+                this.decay = random(0.015, 0.03); // Kitni jaldi gayab hoga
+            }
+
+            update(index) {
+                this.coordinates.pop();
+                this.coordinates.unshift([this.x, this.y]);
+                this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay;
+
+                if(this.alpha <= this.decay) {
+                    particles.splice(index, 1);
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
+                ctx.stroke();
+            }
+        }
+
+        // Create Explosion
+        function createParticles(x, y) {
+            let particleCount = 30; // Kitne tukde honge
+            while(particleCount--) {
+                particles.push(new Particle(x, y));
+            }
+        }
+
+        // Main Loop
+        function loop() {
+            requestAnimationFrame(loop);
+            
+            hue += 0.5;
+
+            // Clear Canvas with Trail Effect (Magic Trick)
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; // 0.5 makes trails fade nicely
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.globalCompositeOperation = 'lighter';
+
+            // Loop Fireworks (Rockets)
+            let i = fireworks.length;
+            while(i--) {
+                fireworks[i].draw();
+                fireworks[i].update(i);
+            }
+
+            // Loop Particles (Explosions)
+            let j = particles.length;
+            while(j--) {
+                particles[j].draw();
+                particles[j].update(j);
+            }
+
+            // Auto Launch Logic
+            if(timerTick >= timerTotal) {
+                fireworks.push(new Firework(canvas.width / 2, canvas.height, random(0, canvas.width), random(0, canvas.height / 2)));
+                timerTick = 0;
+            } else {
+                timerTick++;
+            }
+
+            // Mouse Click Launch Logic
+            if(mousedown) {
+                fireworks.push(new Firework(canvas.width / 2, canvas.height, mx, my));
+            }
+        }
+
+        // Mouse Controls
+        canvas.addEventListener('mousemove', function(e) {
+            mx = e.clientX;
+            my = e.clientY;
+        });
+        canvas.addEventListener('mousedown', function(e) {
+            mousedown = true;
+        });
+        canvas.addEventListener('mouseup', function(e) {
+            mousedown = false;
+        });
+
+        // Start
+        loop();
+
+    </script>
+</body>
+</html>
