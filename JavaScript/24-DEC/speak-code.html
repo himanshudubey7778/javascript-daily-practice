@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="textToSpeak" placeholder="Write Something Brother...">
+    <button onclick="speakNow()">🔊 Talking</button>
+
+    <script>
+        function speakNow() {
+            const text = document.getElementById("textToSpeak").value;
+
+            if(text === "") {
+                alert("Hey Bro Please Write Something!");
+                return;
+            }
+
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = text;
+
+            speech.volume = 1;
+            speech.rate = 1;
+            speech.pitch = 1;
+
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+</body>
+</html>

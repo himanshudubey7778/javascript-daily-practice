@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8; /* Light Medical Grey */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Header - Top Bar */
+        .header {
+            background-color: #007bff; /* Trustworthy Blue */
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Main Container */
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 400px; /* Mobile size */
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        /* Image Preview Area */
+        #preview-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none; /* Pehle chhupa rahega */
+        }
+
+        /* Placeholder Icon */
+        .upload-icon {
+            font-size: 50px;
+            color: #cbd5e0;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Camera Button */
+        .btn-upload {
+            background-color: #28a745; /* Green for Go */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-upload:active {
+            transform: scale(0.95);
+        }
+
+        /* Chhupa hua input */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* AI Result Box */
+        .result-box {
+            margin-top: 25px;
+            text-align: left;
+            padding: 15px;
+            background: #e9f7ef;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+            display: none; /* Pehle chhupa rahega */
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .speaker-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            float: right;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        </style>
+</head>
+<body>
+    
+    <div class="header">
+        <h1>Medi-Sahayak 🏥</h1>
+        <p>Aapki Sehat, Hamari Zimmedari</p>
+    </div>
+
+    <div class="container">
+        <span class="upload-icon" id="placeholder">📷</span>
+        <img id="preview-image"    src="" alt="Prescription Preview">
+
+        <input type="file" id="fileInput" accept="image/*" capture="environment">
+
+        <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+            📸 Parchi Scan Karein
+        </button>
+
+        <p id="loadingText" style="display:none; color: #666; margin-top: 15px;">Dawai samajh raha hu...⏳</p>
+        <div class="result-box" id="resultBox">
+            <button class="speaker-btn">🔊</button>
+            <h3>Dawai ki Jaankari</h3>
+            <p><strong>1. Paracetamol (Crocin):</strong><br>Ye bukhaar ki dawa hai.</p>
+            <p><strong>Kan leni hai:</strong><br>Subah aur Raat (Khane ke baad).</p>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('preview-image');
+        const placeholder = document.getElementById('placeholder');
+        const loadingText = document.getElementById('loadingText');
+        const resultBox = document.getElementById('resultBox');
+
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+
+            if(file) {
+                // FIX 1: Capital 'F' (FileReader)
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    
+                    // FIX 2: Sahi cheez chhupani hai
+                    previewImage.style.display = "block"; // Photo dikhao
+                    placeholder.style.display = "none";   // Icon chhupao
+                }
+                reader.readAsDataURL(file);
+
+                // Simulation Logic
+                loadingText.style.display = "block";
+                resultBox.style.display = "none";
+
+                setTimeout(() => {
+                    loadingText.style.display = "none";
+                    resultBox.style.display = "block";
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
