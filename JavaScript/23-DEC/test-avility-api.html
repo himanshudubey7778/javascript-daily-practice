@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google AI Model Tester</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+        .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; background: #2563eb; color: white; border: none; cursor: pointer; font-size: 16px; border-radius: 5px; }
+        #logs { margin-top: 20px; white-space: pre-wrap; background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🔍 Model Availability Checker</h2>
+    <p>Ye check karega ki tumhari Key kaunse Models use kar sakti hai.</p>
+    <button onclick="checkModels()">Check Now</button>
+    <div id="logs">Waiting...</div>
+</div>
+
+<script>
+    // --- YAHAN APNI KEY PASTE KARO ---
+    const API_KEY = "AIzaSyAcxhwJaGiyK6GF69NS4UgqM4y7ClQDmzU"; 
+
+    async function checkModels() {
+        const logBox = document.getElementById('logs');
+        logBox.innerText = "Connecting to Google Servers...";
+
+        try {
+            // Hum seedha list maang rahe hain (Bina kisi library ke)
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${API_KEY}`);
+            const data = await response.json();
+
+            if (data.error) {
+                logBox.innerText = "❌ ERROR: " + JSON.stringify(data.error, null, 2);
+            } else {
+                // Sirf wo models dikhayenge jo 'generateContent' support karte hain
+                const validModels = data.models
+                    .filter(m => m.supportedGenerationMethods.includes("generateContent"))
+                    .map(m => m.name); // Model ka asli naam nikalenge
+
+                logBox.innerText = "✅ SUCCESS! Tumhari Key in models par chalegi:\n\n" + validModels.join("\n");
+            }
+        } catch (error) {
+            logBox.innerText = "❌ NETWORK ERROR: " + error.toString();
+        }
+    }
+</script>
+
+</body>
+</html>
