@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #222;
+    color: white;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #00d2d3;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.board {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.column {
+    background: #333;
+    flex: 1; /* Teeno columns barabar width lenge */
+    min-height: 500px;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.col-header {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #222;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/* Task Cards jo hum JS se banayenge unka design */
+.task-card {
+    background: #444;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #fff;
+    cursor: pointer;
+}
+
+.task-card h3 {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.task-card p {
+    font-size: 13px;
+    color: #ccc;
+}
+
+/* --- MODAL STYLES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Peeche ka background dark */
+    display: none; /* Shuru me dikhna nahi chahiye */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #333;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    border: 1px solid #555;
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    color: #00d2d3;
+}
+
+.modal-content input, 
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+}
+
+.modal-content textarea {
+    height: 80px;
+    resize: none;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

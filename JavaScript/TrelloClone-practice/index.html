@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Kanban Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Task Master JS 🚀</h1>
+        <button id="add-btn">+ Add New Task</button>
+    </header>
+
+   <div class="board">
+
+        <div class="column" id="todo">
+             <div class="col-header" style="background: #ff5c5a;">To Do</div>
+             <div class="task-list" id="todo-list"></div>
+        </div>
+
+        <div class="column" id="progress">
+            <div class="col-header" style="background: #ffbd4a;">In Progress</div>
+            <div class="task-list" id="progress-list"></div>
+        </div>
+
+        <div class="column" id="done">
+            <div class="col-header" style="background: #00d2d3;">Done</div>
+            <div class="task-list" id="done-list"></div>
+        </div>
+
+        <div class="modal-overlay" id="task-modal">
+            <div class="modal-content">
+                <h2>New Task</h2>
+                <input type="text" id="task-title" placeholder="Task Title (e.g. , Learn React)">
+                <textarea id="task-desc" placeholder="Description (Details...)"></textarea>
+
+                <div class="modal-buttons">
+                    <button onclick="closeModal()" style="background: #ff5c5c;">Cancel</button>
+                    <button onclick="saveTask()">Save Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

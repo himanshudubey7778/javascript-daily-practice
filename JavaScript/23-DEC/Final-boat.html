@@ -41,8 +41,8 @@
     <script type="module">
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-        // --- YAHAN SIRF NAYI WALI KEY DALNA (My API wali mat dalna) ---
-        const API_KEY = "AIzaSyAcxhwJaGiyK6GF69NS4UgqM4y7ClQDmzU"; 
+        // Aapki nayi wali key (Jo screenshot image_7ab989.png mein hai)
+        const API_KEY = "AIzaSyDd7J9mcQ315v4__UPCMena5S9m3qlEbgY"; 
 
         const genAI = new GoogleGenerativeAI(API_KEY);
         const fileInput = document.getElementById('fileInput');
@@ -75,8 +75,8 @@
             loadingText.innerText = "Gemini dawa ko pehchan raha hai... 🤖";
 
             try {
-                // MODEL: Ye naam aapki list mein tha, isme version number nahi hai
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                // MODEL FIX: Ye naam aapki list mein AVAILABLE tha
+                const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
                 const imagePart = await fileToGenerativePart(file);
                 const prompt = "You are a medical assistant. Analyze this medicine image. Identify the name and usage in Hinglish. Keep it short.";
@@ -98,11 +98,11 @@
                 loadingText.style.display = "none";
                 resultBox.style.display = "block";
 
-                // Error Handling
-                if (error.message.includes("429")) {
-                    resultBox.innerHTML = `<p style="color:orange; font-weight:bold;">⏳ Rukiye!</p><p>Aapne jaldi-jaldi button dabaya hai. 1 Minute wait karein.</p>`;
-                } else if (error.message.includes("404")) {
-                    resultBox.innerHTML = `<p style="color:red; font-weight:bold;">❌ Error:</p><p>Model Name galat hai. Code mein "gemini-1.5-flash" check karein.</p>`;
+                // Error Handling with clear messages
+                if (error.message.includes("Failed to fetch")) {
+                    resultBox.innerHTML = `<p style="color:red; font-weight:bold;">❌ Internet Error!</p><p>Laptop internet se connect nahi hai. Please WiFi check karein.</p>`;
+                } else if (error.message.includes("429")) {
+                    resultBox.innerHTML = `<p style="color:orange; font-weight:bold;">⏳ Quota Full!</p><p>2 Minute wait karein.</p>`;
                 } else {
                     resultBox.innerHTML = `<p style="color:red; font-weight:bold;">❌ Error:</p><p>${error.message}</p>`;
                 }
