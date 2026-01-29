@@ -1,0 +1,3 @@
+function getDivisor(num) {
+    let 
+}
