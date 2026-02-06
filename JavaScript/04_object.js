@@ -71,11 +71,11 @@ console.log(instructor);
 // }
 // navbar = (company = "himanshu")
 
-  {
-    "name": "himanshu",
-    "coursename": "Js in English",
-    "price": "free"
- }
+//   {
+//     "name": "himanshu",
+//     "coursename": "Js in English",
+//     "price": "free"
+//  }
 
  [
     {},
