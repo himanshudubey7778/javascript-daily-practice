@@ -1,0 +1,154 @@
+import React, { useState } from 'react';
+import { 
+  Bike, 
+  Car, 
+  MapPin, 
+  Navigation, 
+  Clock, 
+  CreditCard, 
+  ShieldCheck, 
+  Menu,
+  X,
+  Star,
+  Zap
+} from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('bike');
+  const [bookingStatus, setBookingStatus] = useState(null);
+  const [pickup, setPickup] = useState('');
+  const [drop, setDrop] = useState('');
+
+  // Pricing Logic
+  const prices = {
+    bike: { base: 20, perKm: 5 },
+    auto: { base: 40, perKm: 8 },
+    car: { base: 60, perKm: 12 }
+  };
+
+  const handleBooking = (e) => {
+    e.preventDefault();
+    if(!pickup || !drop) return alert("Bhai, location toh dalo!");
+    setBookingStatus('searching');
+    setTimeout(() => setBookingStatus('confirmed'), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
+      {/* Mobile-First Header */}
+      <header className="p-4 flex justify-between items-center border-b border-slate-800 sticky top-0 bg-slate-900/90 backdrop-blur-md z-50">
+        <div className="flex items-center gap-2">
+          <div className="bg-yellow-500 p-2 rounded-lg">
+            <Zap className="text-black fill-black" size={20} />
+          </div>
+          <h1 className="text-xl font-black tracking-tighter italic">SAFAR<span className="text-yellow-500 text-2xl">X</span></h1>
+        </div>
+        <Menu className="text-yellow-500" />
+      </header>
+
+      <main className="max-w-md mx-auto p-4 pb-24">
+        {/* Hero Section */}
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold mb-2">Bhai, kahan jana hai?</h2>
+          <p className="text-slate-400 text-sm">Quickest bikes and safest family cars.</p>
+        </div>
+
+        {/* Booking Card */}
+        <div className="bg-slate-800 p-5 rounded-3xl shadow-2xl border border-slate-700 mb-8">
+          <div className="flex gap-4 mb-6 bg-slate-900 p-1 rounded-2xl">
+            {['bike', 'auto', 'car'].map((type) => (
+              <button
+                key={type}
+                onClick={() => setActiveTab(type)}
+                className={`flex-1 py-3 rounded-xl flex flex-col items-center gap-1 transition-all ${
+                  activeTab === type ? 'bg-yellow-500 text-black font-bold' : 'text-slate-500'
+                }`}
+              >
+                {type === 'bike' && <Bike size={24} />}
+                {type === 'auto' && <Navigation size={24} />}
+                {type === 'car' && <Car size={24} />}
+                <span className="text-[10px] uppercase tracking-wider">{type}</span>
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleBooking} className="space-y-4">
+            <div className="relative">
+              <div className="absolute left-3 top-4 w-2 h-2 rounded-full bg-green-500"></div>
+              <input
+                type="text"
+                placeholder="Pickup Point (e.g. Sultanpur Junction)"
+                className="w-full bg-slate-900 p-3 pl-8 rounded-xl border border-slate-700 outline-none focus:border-yellow-500"
+                value={pickup}
+                onChange={(e) => setPickup(e.target.value)}
+              />
+              <div className="absolute left-4 top-8 w-0.5 h-6 bg-slate-700"></div>
+            </div>
+            <div className="relative">
+              <div className="absolute left-3 top-4 w-2 h-2 rounded-full bg-red-500"></div>
+              <input
+                type="text"
+                placeholder="Drop Location"
+                className="w-full bg-slate-900 p-3 pl-8 rounded-xl border border-slate-700 outline-none focus:border-yellow-500"
+                value={drop}
+                onChange={(e) => setDrop(e.target.value)}
+              />
+            </div>
+
+            <div className="flex justify-between items-center py-2 px-2">
+              <span className="text-sm text-slate-400">Estimated Fare:</span>
+              <span className="text-xl font-bold text-yellow-500">₹{prices[activeTab].base} - ₹{prices[activeTab].base + 20}</span>
+            </div>
+
+            <button className="w-full bg-yellow-500 text-black py-4 rounded-2xl font-black text-lg hover:bg-yellow-400 transition-all shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+              {bookingStatus === 'searching' ? 'SEARCHING DRIVER...' : `BOOK ${activeTab.toUpperCase()} NOW`}
+            </button>
+          </form>
+        </div>
+
+        {/* Status Message */}
+        {bookingStatus === 'confirmed' && (
+          <div className="bg-green-500/10 border border-green-500 p-4 rounded-2xl mb-8 flex items-center gap-3 animate-bounce">
+            <ShieldCheck className="text-green-500" />
+            <p className="text-sm font-bold text-green-500">Bhai, ride confirm ho gayi! Driver 2 min mein pahunch raha hai.</p>
+          </div>
+        )}
+
+        {/* Features Section */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+            <Clock className="text-yellow-500 mb-2" size={20} />
+            <h4 className="font-bold text-sm">24/7 Service</h4>
+            <p className="text-[10px] text-slate-500">Night shift? Hum hain na.</p>
+          </div>
+          <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+            <ShieldCheck className="text-yellow-500 mb-2" size={20} />
+            <h4 className="font-bold text-sm">Safe Family</h4>
+            <p className="text-[10px] text-slate-500">Har ride insured hai.</p>
+          </div>
+        </div>
+
+        {/* Footer Text */}
+        <p className="mt-8 text-center text-slate-600 text-[10px] uppercase tracking-widest font-bold">
+          Made with ❤️ by Himanshu | CodeAurTrade
+        </p>
+      </main>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-3 flex justify-around items-center z-50">
+        <div className="flex flex-col items-center text-yellow-500">
+          <Navigation size={20} />
+          <span className="text-[8px] mt-1 font-bold">RIDE</span>
+        </div>
+        <div className="flex flex-col items-center text-slate-500">
+          <Star size={20} />
+          <span className="text-[8px] mt-1 font-bold">SAVED</span>
+        </div>
+        <div className="flex flex-col items-center text-slate-500">
+          <CreditCard size={20} />
+          <span className="text-[8px] mt-1 font-bold">PAY</span>
+        </div>
+      </nav>
+    </div>
+  );
+}
