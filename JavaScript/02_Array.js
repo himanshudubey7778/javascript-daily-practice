@@ -2,7 +2,7 @@ const my_practice = ["coding", "developer", "backend"]
 const Hobby = ["frontend", "fullStack", "Clone"]
 
 // my_practice.push(Hobby)
-
+//  hii my name is himanshu dubey and my 
 // console.log(my_practice);
 // console.log(my_practice[3][1]);
 
