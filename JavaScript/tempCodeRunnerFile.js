@@ -1,1 +1,1 @@
-my_practice.push(Hobby)
+console.log(myArr[1])
